@@ -1,9 +1,7 @@
-using Zion.API.Lexer.AST.Statements;
-using Zion.API.Parser;
+using Zion.API.Lexer.AST.Scopes;
 
 namespace Zion.API.Lexer.AST;
 
 public record ProgramAST(
-    IEnumerable<Token> Imports,
-    IEnumerable<Statement> Statements
+    IEnumerable<ScopeAst> Scopes
 ) : AbstractSyntaxTree;

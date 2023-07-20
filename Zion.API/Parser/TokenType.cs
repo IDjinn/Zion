@@ -45,11 +45,35 @@ public enum TokenType
 
 
     //BLOCKS
-    OpenBracket, // {
-    CloseBracket, // }
-    OpenBrace, // (
-    CloseBrace, // )
+
+    /// <summary>
+    /// {
+    /// </summary>
+    OpenCurlyBracket, // {
+
+    /// <summary>
+    /// }
+    /// </summary>
+    CloseCurlyBracket, // }
+
+    /// <summary>
+    /// (
+    /// </summary>
+    OpenRoundBracket, // (
+
+    /// <summary>
+    /// )
+    /// </summary>
+    CloseRoundBracket, // )
+
+    /// <summary>
+    /// [
+    /// </summary>
     OpenSquareBracket, // [
+
+    /// <summary>
+    /// ]
+    /// </summary>
     CloseSquareBracket, // ]
 
     // KEYWORDS (all keywords are contextual)

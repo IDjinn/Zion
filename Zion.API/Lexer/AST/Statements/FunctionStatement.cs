@@ -1,3 +1,4 @@
+using Zion.API.Lexer.AST.Scopes;
 using Zion.API.Parser;
 
 namespace Zion.API.Lexer.AST.Statements;
@@ -7,5 +8,5 @@ public record FunctionStatement(
     Token ReturnType,
     Token Identifier,
     IEnumerable<Token> Parameters,
-    BlockStatement Body
+    LexerBlockScope Body
 ) : Statement;

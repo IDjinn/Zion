@@ -133,12 +133,12 @@ public class ZionParser : IParser
                     break;
 
                 case '{':
-                    MakeToken(reader.Location(), TokenType.OpenBrace);
+                    MakeToken(reader.Location(), TokenType.OpenCurlyBracket);
                     reader.Advance();
                     break;
 
                 case '}':
-                    MakeToken(reader.Location(), TokenType.CloseBrace);
+                    MakeToken(reader.Location(), TokenType.CloseCurlyBracket);
                     reader.Advance();
                     break;
 
@@ -223,6 +223,15 @@ public class ZionParser : IParser
                     reader.Advance();
                     break;
 
+                case '(':
+                    MakeToken(reader.Location(), TokenType.OpenRoundBracket);
+                    reader.Advance();
+                    break;
+
+                case ')':
+                    MakeToken(reader.Location(), TokenType.CloseRoundBracket);
+                    reader.Advance();
+                    break;
 
                 case '\n': // TODO /R/t
                     reader.AdvanceColumn();
@@ -255,6 +264,7 @@ public class ZionParser : IParser
 
     public bool TryParseStringLiteral(ref SourceReader reader)
     {
+        // TODO performance optimization
         var location = reader.Location(); // start of string
         if (reader.Peek('"'))
         {
