@@ -21,5 +21,6 @@ public class ZionCompiler
     {
         var tokens = _parser.ParseTokens(source);
         var lexer = _lexer.GetSyntaxTree(tokens.ToList());
+        _generation.Generate(lexer);
     }
 }

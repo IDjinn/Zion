@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Zion.API\Zion.API.csproj"/>
+        <ProjectReference Include="..\Zion.Generation\Zion.Generation.csproj"/>
         <ProjectReference Include="..\Zion.Lexer\Zion.Lexer.csproj"/>
         <ProjectReference Include="..\Zion.Parser\Zion.Parser.csproj"/>
     </ItemGroup>
