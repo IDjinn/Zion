@@ -4,6 +4,7 @@ using Zion.API.Lexer;
 using Zion.API.Lexer.AST;
 using Zion.API.Lexer.AST.Scopes;
 using Zion.API.Lexer.AST.Statements;
+using Zion.API.Lexer.AST.Statements.Functions;
 using Zion.API.Parser;
 
 namespace Zion.Lexer;
@@ -57,7 +58,7 @@ public class ZionLexer : ILexer
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public static bool is_variable(ref LexerWalker walker)
+    public static bool is_variable(LexerWalker walker)
     {
         var hasVariableKeyword = walker.CurrentToken.TokenType == TokenType.Identifier
                                  && walker.CurrentToken.Value == LexerTypeUtilities.KindToKeyword[SyntaxKind.Variable];
@@ -65,9 +66,21 @@ public class ZionLexer : ILexer
 
         walker.Advance(); // var
         var identifier = walker.AdvanceIf(TokenType.Identifier);
+        var equals = walker.AdvanceIf(TokenType.Equal);
+        var something = walker.Advance();
+        var semiColon = walker.AdvanceIf(TokenType.Semicolon);
 
         // TODO OPERATORS
         return true;
+    }
+
+    public static bool is_function_call(LexerWalker walker)
+    {
+        var hasFunctionCall = walker.CurrentToken.TokenType == TokenType.Identifier
+                              && walker.Peek(TokenType.OpenRoundBracket);
+        if (!hasFunctionCall) return false;
+
+        return true; // TODO
     }
 
 
@@ -84,7 +97,7 @@ public class ZionLexer : ILexer
         do
         {
             // we expect properties
-            if (is_variable(ref lexer))
+            if (is_variable(lexer))
             {
                 // handle properties
             }
@@ -146,12 +159,52 @@ public class ZionLexer : ILexer
         walker.AdvanceIf(TokenType.OpenCurlyBracket);
 
         // TODO: sanitize this
-        while (walker.CurrentToken.TokenType != TokenType.CloseCurlyBracket)
-            blockStatement.Tokens.Add(walker.Advance());
+        do
+        {
+            var current = walker.CurrentToken;
+            if (current.TokenType == TokenType.OpenCurlyBracket)
+            {
+                return LexerFunctionBlockScope(blockStatement, ref walker);
+            }
+
+            var statement = LexerStatement(blockStatement, ref walker);
+            if (statement is null)
+                break;
+
+            blockStatement.AddStatement(statement);
+        } while (true);
 
         // block code
         walker.AdvanceIf(TokenType.CloseCurlyBracket);
 
         return blockStatement;
+    }
+
+    public Statement? LexerStatement(ScopeAst scope, ref LexerWalker walker)
+    {
+        if (walker.CurrentToken.TokenType == TokenType.CloseCurlyBracket)
+            return null;
+
+        if (is_variable(walker))
+            return LexerVariable(scope, ref walker);
+
+        if (is_function_call(walker))
+            return LexerFunctionCall(scope, ref walker);
+
+        return null;
+    }
+
+    public Statement LexerFunctionCall(ScopeAst scope, ref LexerWalker walker)
+    {
+        var identifier = walker.Advance();
+        walker.AdvanceIf(TokenType.OpenRoundBracket);
+        var parameters = walker.TakeWhile(TokenType.CloseRoundBracket);
+        walker.AdvanceIf(TokenType.CloseRoundBracket);
+        return new FunctionCallStatement(identifier, parameters, scope);
+    }
+
+    public Statement LexerVariable(ScopeAst scope, ref LexerWalker walker)
+    {
+        return new LocalVariableStatement(walker.Advance(), walker.Advance(), walker.Advance(), scope);
     }
 }

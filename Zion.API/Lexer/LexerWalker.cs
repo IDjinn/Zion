@@ -47,4 +47,18 @@ public record struct LexerWalker
         Index += count;
         return aux;
     }
+
+    public ICollection<Token> TakeWhile(TokenType tokenType)
+    {
+        var ret = new List<Token>();
+        do
+        {
+            if (CurrentToken.TokenType == tokenType)
+                break;
+
+            ret.Add(Advance());
+        } while (!EOF);
+
+        return ret;
+    }
 }

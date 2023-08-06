@@ -4,7 +4,7 @@ namespace Zion.API.Lexer.AST.Scopes;
 
 public record ScopeAst : AbstractSyntaxTree
 {
-    protected readonly List<Statement> statements = new();
+    protected readonly IList<Statement> statements = new List<Statement>();
 
     public ScopeAst()
     {
